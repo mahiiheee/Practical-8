@@ -1,0 +1,49 @@
+// Practical 08: Singleton design pattern
+// Use case: application settings - there must be only ONE settings object
+// shared by the whole program.
+#include <iostream>
+#include <string>
+using namespace std;
+
+class AppSettings {
+private:
+    string theme;
+    int fontSize;
+
+    // Private constructor: nobody outside can create objects with "AppSettings x;"
+    AppSettings() : theme("Light"), fontSize(12) {
+        cout << "AppSettings object created (only once!)\n";
+    }
+
+public:
+    // Delete copy so that no second object can be made by copying
+    AppSettings(const AppSettings&) = delete;
+    AppSettings& operator=(const AppSettings&) = delete;
+
+    // The only way to get the object
+    static AppSettings& getInstance() {
+        static AppSettings instance;   // created first time only
+        return instance;
+    }
+
+    void setTheme(string t) { theme = t; }
+    void setFontSize(int s) { fontSize = s; }
+    void show() { cout << "Theme: " << theme << ", Font size: " << fontSize << endl; }
+};
+
+int main() {
+    cout << "Call 1: get the settings\n";
+    AppSettings& s1 = AppSettings::getInstance();
+    s1.show();
+    s1.setTheme("Dark");
+    s1.setFontSize(16);
+
+    cout << "\nCall 2: get the settings again (from another place)\n";
+    AppSettings& s2 = AppSettings::getInstance();
+    s2.show();             // shows Dark, 16 -> same object!
+
+    cout << "\nAddress of s1: " << &s1 << endl;
+    cout << "Address of s2: " << &s2 << endl;
+    cout << (&s1 == &s2 ? "Both are the SAME object." : "Different objects.") << endl;
+    return 0;
+}
